@@ -1,0 +1,16 @@
+Name: wildfire_yolov5
+OnnxPath: .\Resources\wildfire_yolov5.onnx
+Labels:
+  - fire
+  - smoke
+---
+Name: wildfire_yolov6
+OnnxPath: D:\nn\code\cv\yolov6\runs\train\exp\weights\firesmokev2.onnx
+Labels:
+  - fire
+  - smoke
+---
+Name: firepoint_yolov6
+OnnxPath: D:\nn\code\cv\yolov6\runs\train\exp\weights\firepoint.onnx
+Labels:
+  - fire
