@@ -7,8 +7,8 @@ namespace OnnxDemo.Interfaces
     public interface IOnnxModel
     {
         Tensor<float> PreProcess(Bitmap bitmap);
-        float[] Inference(Tensor<float> input);
-        List<IPrediction> PostProcess(float[] results);
+        Tensor<float> Inference(Tensor<float> input);
+        List<IPrediction> PostProcess(Tensor<float> output);
         Bitmap Predict(Bitmap bitmap);
     }
 }

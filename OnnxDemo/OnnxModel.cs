@@ -39,7 +39,7 @@ namespace OnnxDemo
             return bitmap.Resize(InputWidth, InputHeight).FastToOnnxTensor_13hw();
         }
 
-        public virtual float[] Inference(Tensor<float> input)
+        public virtual Tensor<float> Inference(Tensor<float> input)
         {
             List<NamedOnnxValue> container = new()
             {
@@ -54,16 +54,16 @@ namespace OnnxDemo
                 }
             }).Result;
 
-            return output.AsTensor<float>().ToArray();
+            return output.AsTensor<float>();
         }
 
         public List<IPrediction> Predict(Bitmap bitmap)
         {
             Tensor<float> input = PreProcess(bitmap);
-            float[] output = Inference(input);
+            Tensor<float> output = Inference(input);
             return PostProcess(output);
         }
 
-        public abstract List<IPrediction> PostProcess(float[] output);
+        public abstract List<IPrediction> PostProcess(Tensor<float> output);
     }
 }

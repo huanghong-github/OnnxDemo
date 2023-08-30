@@ -210,10 +210,10 @@ namespace OnnxDemo.Extensions
             using Graphics g = Graphics.FromImage(source);
             foreach (PredictionBox p in predictionBoxs)
             {
-                int top = (int)(p.Box.MinY * source.Height);
-                int left = (int)(p.Box.MinX * source.Width);
-                int bottom = (int)(p.Box.MaxY * source.Height);
-                int right = (int)(p.Box.MaxX * source.Width);
+                int top = (int)((float)p.BBox.Top / p.InputHeight * source.Height);
+                int left = (int)((float)p.BBox.Left / p.InputWidth * source.Width);
+                int bottom = (int)((float)p.BBox.Bottom / p.InputHeight * source.Height);
+                int right = (int)((float)p.BBox.Right / p.InputWidth * source.Width);
 
                 g.DrawRectangle(pen: new Pen(draw.BoxColor, 3),
                                 rect: new Rectangle(left, top, right - left, bottom - top));

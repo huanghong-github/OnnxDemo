@@ -1,4 +1,7 @@
-﻿using OnnxDemo.Extensions;
+﻿using Emgu.CV.Dnn;
+using Emgu.CV.Util;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using OnnxDemo.Extensions;
 using OnnxDemo.Interfaces;
 using System.Drawing;
 
@@ -16,58 +19,77 @@ namespace OnnxDemo
             return bitmap;
         }
 
-        public override List<IPrediction> PostProcess(float[] results)
+        public override List<IPrediction> PostProcess(Tensor<float> output)
         {
-            return PostProcess2PredictionBox(results).Cast<IPrediction>().ToList();
+            return PostProcess2PredictionBox(output).Cast<IPrediction>().ToList();
         }
 
-        private List<PredictionBox> PostProcess2PredictionBox(float[] results)
+        private List<PredictionBox> PostProcess2PredictionBox(Tensor<float> output)
         {
             //IOU_threshold iou阈值
             //conf_threshold 置信度
-            //all_threshold  置信度* 类别概率
-            //output  一维列表
+            //score  置信度* 类别概率
+            //output  3维Tensor
             //box format  0,1,2,3 ->box, 4->confidence, 5-85 -> coco classes confidence
-            int dimensions = 5 + labels.Length;
+            int len = output.Dimensions[2];
+            int maxwh = 4096;
+            int topK = 50;
 
+            List<Rectangle> bboxes = new();
+            List<float> scores = new();
             List<PredictionBox> detections = new();
-            foreach (float[] chunk in results.Chunk(dimensions))
+            foreach (float[] chunk in output.Chunk(len))
             {
                 float confidence = chunk[4];
-                if (confidence <= ConfThreshold)
+                List<float> classScore = chunk[5..].ToList();
+                float maxClassScore = classScore.Max();
+                int maxClassScoreIdx = classScore.FindIndex(x => x == maxClassScore);
+
+                if (confidence <= ConfThreshold || maxClassScore <= ConfThreshold)
                 {
                     continue;
                 }
 
-                for (int i = 5; i < dimensions; i++)
+                int centerX = (int)chunk[0], centerY = (int)chunk[1],
+                width = (int)chunk[2], height = (int)chunk[3];
+
+                bboxes.Add(new Rectangle(x: centerX - (width / 2) + maxwh * maxClassScoreIdx,
+                                         y: centerY - (height / 2) + maxwh * maxClassScoreIdx,
+                                         width: width + maxwh * maxClassScoreIdx,
+                                         height: height + maxwh * maxClassScoreIdx));
+                scores.Add(confidence * maxClassScore);
+                detections.Add(new PredictionBox()
                 {
-                    if (chunk[i] <= ConfThreshold)
-                    {
-                        continue;
-                    }
+                    BBox = new Rectangle(x: centerX - (width / 2),
+                                         y: centerY - (height / 2),
+                                         width: width,
+                                         height: height),
+                    Confidence = confidence,
+                    LabelIndex = maxClassScoreIdx,
+                    LabelName = labels[maxClassScoreIdx],
+                    Score = confidence * maxClassScore,
+                    InputWidth = InputWidth,
+                    InputHeight = InputHeight
+                });
 
-                    chunk[i] *= confidence;
-
-                    float center_x = chunk[0], center_y = chunk[1],
-                    halfWidth = chunk[2] / 2, halfHeight = chunk[3] / 2;
-
-                    PredictionBox.BBox bbox = new(minX: (center_x - halfWidth) / InputWidth,
-                                minY: (center_y - halfHeight) / InputWidth,
-                                maxX: (center_x + halfWidth) / InputHeight,
-                                maxY: (center_y + halfHeight) / InputHeight);
-
-                    int label_index = i - 5;
-                    detections.Add(new PredictionBox()
-                    {
-                        Box = bbox,
-                        Confidence = confidence,
-                        LabelIndex = label_index,
-                        LabelName = labels[label_index],
-                        Score = chunk[i]
-                    });
-                }
             }
-            return PredictionBox.NMS(detections, IOUThreshold);
+
+            VectorOfFloat updatedScores = new();
+            VectorOfInt indices = new();
+            DnnInvoke.SoftNMSBoxes(bboxes: new VectorOfRect(bboxes.ToArray()),
+                                   scores: new VectorOfFloat(scores.ToArray()),
+                                   updatedScores: updatedScores,
+                                   scoreThreshold: ConfThreshold,
+                                   nmsThreshold: IOUThreshold,
+                                   indices: indices,
+                                   topK: topK);
+
+            List<PredictionBox> result = new();
+            foreach (int i in indices.ToArray())
+            {
+                result.Add(detections[i]);
+            }
+            return result;
         }
     }
 }

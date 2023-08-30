@@ -69,7 +69,7 @@ namespace OnnxWinForms
         private void ShowImage()
         {
             string path = textBoxDirectory.Text + "\\" + listBoxDirectory.SelectedItem.ToString();
-            DefaultFileLogHelper.Info(path);
+            //DefaultFileLogHelper.Info(path);
             if (File.Exists(path))
             {
                 bitmap = (Bitmap)Image.FromFile(path);
