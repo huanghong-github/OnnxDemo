@@ -12,12 +12,24 @@
 
         public static Dictionary<string, YamlConfig> ToDict(List<YamlConfig> list)
         {
+            Check(list);
             Dictionary<string, YamlConfig> dict = new();
             foreach (YamlConfig item in list)
             {
                 dict[item.Name] = item;
             }
             return dict;
+        }
+
+        public static void Check(List<YamlConfig> list)
+        {
+            foreach (YamlConfig item in list)
+            {
+                if (!Path.Exists(item.OnnxPath))
+                {
+                    throw new Exception(item.OnnxPath + " not exists");
+                }
+            }
         }
     }
 }

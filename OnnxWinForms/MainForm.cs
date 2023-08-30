@@ -16,12 +16,19 @@ namespace OnnxWinForms
 
         public MainForm()
         {
-            YamlParse yamlParse = new(Properties.Resources.OnnxDemoYaml);
-            configs = YamlConfig.ToDict(yamlParse.ParseList<YamlConfig>());
-            string[] configNames = configs.Keys.ToArray();
+            try
+            {
+                YamlParse yamlParse = new(Properties.Resources.OnnxDemoYaml);
+                configs = YamlConfig.ToDict(yamlParse.ParseList<YamlConfig>());
+            }
+            catch (Exception e)
+            {                
+                MessageBox.Show(e.Message);
+                throw;
+            }
 
             InitializeComponent();
-
+            string[] configNames = configs.Keys.ToArray();
             comboBoxModel.Items.AddRange(configNames);
             comboBoxModel.SelectedIndex = 0;
             ChangeModel();
@@ -31,7 +38,7 @@ namespace OnnxWinForms
         {
             if (bitmap != null)
             {
-                pictureBoxImage.Image = model.Predict(bitmap);
+                pictureBoxImage.Image = model.Predict((Bitmap)bitmap.Clone());
             }
         }
 
