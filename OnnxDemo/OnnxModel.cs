@@ -1,8 +1,6 @@
-﻿using Common.Helper;
-using Microsoft.ML.OnnxRuntime;
+﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using OnnxDemo.Extensions;
-using OnnxDemo.Interfaces;
 using System.Drawing;
 
 namespace OnnxDemo
@@ -12,6 +10,7 @@ namespace OnnxDemo
     {
         public InferenceSession session;
         public string[] labels;
+        private string inputTensorName;
         public float IOUThreshold { get; set; } = 0.4f;
         public float ConfThreshold { get; set; } = 0.25f;
         public int InputWidth { get; set; } = 640;
@@ -21,17 +20,14 @@ namespace OnnxDemo
         public OnnxModel(string onnxPath, string[] labels)
         {
             SessionOptions options = new();
-            try
-            {
-                options.AppendExecutionProvider_DML(0);
-            }
-            catch (Exception exception)
-            {
-                DefaultFileLogHelper.Error("error", exception);
-            }
+            options.AppendExecutionProvider_CPU();
+            session = new InferenceSession(onnxPath, options);
 
-            session = new(onnxPath, options);
             this.labels = labels;
+            KeyValuePair<string, NodeMetadata> inputMetadata = session.InputMetadata.First();
+            inputTensorName = inputMetadata.Key;
+            InputHeight = inputMetadata.Value.Dimensions[2];
+            InputWidth = inputMetadata.Value.Dimensions[3];
         }
 
         public virtual Tensor<float> PreProcess(Bitmap bitmap)
@@ -43,7 +39,7 @@ namespace OnnxDemo
         {
             List<NamedOnnxValue> container = new()
             {
-                NamedOnnxValue.CreateFromTensor("images", input)
+                NamedOnnxValue.CreateFromTensor(inputTensorName, input)
             };
 
             DisposableNamedOnnxValue output = Task.Run(() =>
@@ -57,13 +53,13 @@ namespace OnnxDemo
             return output.AsTensor<float>();
         }
 
-        public List<IPrediction> Predict(Bitmap bitmap)
+        public T Predict<T>(Bitmap bitmap) where T : class
         {
             Tensor<float> input = PreProcess(bitmap);
             Tensor<float> output = Inference(input);
-            return PostProcess(output);
+            return PostProcess<T>(output);
         }
 
-        public abstract List<IPrediction> PostProcess(Tensor<float> output);
+        public abstract T PostProcess<T>(Tensor<float> output) where T : class;
     }
 }

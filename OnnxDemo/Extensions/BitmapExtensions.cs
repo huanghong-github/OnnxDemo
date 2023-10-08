@@ -1,5 +1,6 @@
 ﻿// https://github.com/wanglvhang/OnnxYoloDemo
 using Microsoft.ML.OnnxRuntime.Tensors;
+using OnnxDemo.Detection;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;

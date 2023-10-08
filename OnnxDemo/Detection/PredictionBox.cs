@@ -1,10 +1,9 @@
-﻿using OnnxDemo.Interfaces;
-using System.Drawing;
+﻿using System.Drawing;
 
-namespace OnnxDemo
+namespace OnnxDemo.Detection
 {
     //预测框
-    public class PredictionBox : IPrediction
+    public class PredictionBox
     {
         public required Rectangle BBox { get; set; }
 

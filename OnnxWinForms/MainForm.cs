@@ -1,7 +1,7 @@
-using Common.Helper;
+﻿using Common.Helper;
 using OnnxDemo;
+using OnnxDemo.Detection;
 using OnnxDemo.Extensions;
-using OnnxDemo.Interfaces;
 using OnnxDemo.Utils;
 
 namespace OnnxWinForms
@@ -22,7 +22,7 @@ namespace OnnxWinForms
                 configs = YamlConfig.ToDict(yamlParse.ParseList<YamlConfig>());
             }
             catch (Exception e)
-            {                
+            {
                 MessageBox.Show(e.Message);
                 throw;
             }
@@ -38,7 +38,7 @@ namespace OnnxWinForms
         {
             if (bitmap != null)
             {
-                pictureBoxImage.Image = model.Predict((Bitmap)bitmap.Clone());
+                pictureBoxImage.Image = model.Predict<Bitmap>((Bitmap)bitmap.Clone());
             }
         }
 
@@ -47,7 +47,7 @@ namespace OnnxWinForms
         {
             FolderBrowserDialog folderBrowserDialog = new()
             {
-                Description = "ѡ��ƥ��Ŀ¼"
+                Description = "选择匹配目录"
             };
 
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
@@ -100,8 +100,6 @@ namespace OnnxWinForms
             {
                 IOUThreshold = CurrentConfig.IOUThreshold,
                 ConfThreshold = CurrentConfig.ConfThreshold,
-                InputWidth = CurrentConfig.InputWidth,
-                InputHeight = CurrentConfig.InputHeight,
             };
         }
 

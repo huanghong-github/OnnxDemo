@@ -2,26 +2,26 @@
 using Emgu.CV.Util;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using OnnxDemo.Extensions;
-using OnnxDemo.Interfaces;
 using System.Drawing;
 
-namespace OnnxDemo
+namespace OnnxDemo.Detection
 {
     public class YoloOnnxModel : OnnxModel, IOnnxModel
     {
-        public YoloOnnxModel(string onnxPath, string[] labels) : base(onnxPath, labels) { }
-
-
-        public new Bitmap Predict(Bitmap bitmap)
+        public YoloOnnxModel(string onnxPath, string[] labels) : base(onnxPath, labels)
         {
-            List<PredictionBox> preds = base.Predict(bitmap).Cast<PredictionBox>().ToList();
-            bitmap.DrawPrediction(preds, draw);
-            return bitmap;
         }
 
-        public override List<IPrediction> PostProcess(Tensor<float> output)
+        public new T Predict<T>(Bitmap bitmap) where T : class
         {
-            return PostProcess2PredictionBox(output).Cast<IPrediction>().ToList();
+            List<PredictionBox> preds = base.Predict<List<PredictionBox>>(bitmap);
+            bitmap.DrawPrediction(preds, draw);
+            return bitmap as T;
+        }
+
+        public override T PostProcess<T>(Tensor<float> output) where T : class
+        {
+            return PostProcess2PredictionBox(output) as T;
         }
 
         private List<PredictionBox> PostProcess2PredictionBox(Tensor<float> output)
@@ -53,15 +53,15 @@ namespace OnnxDemo
                 int centerX = (int)chunk[0], centerY = (int)chunk[1],
                 width = (int)chunk[2], height = (int)chunk[3];
 
-                bboxes.Add(new Rectangle(x: centerX - (width / 2) + maxwh * maxClassScoreIdx,
-                                         y: centerY - (height / 2) + maxwh * maxClassScoreIdx,
+                bboxes.Add(new Rectangle(x: centerX - width / 2 + maxwh * maxClassScoreIdx,
+                                         y: centerY - height / 2 + maxwh * maxClassScoreIdx,
                                          width: width + maxwh * maxClassScoreIdx,
                                          height: height + maxwh * maxClassScoreIdx));
                 scores.Add(confidence * maxClassScore);
                 detections.Add(new PredictionBox()
                 {
-                    BBox = new Rectangle(x: centerX - (width / 2),
-                                         y: centerY - (height / 2),
+                    BBox = new Rectangle(x: centerX - width / 2,
+                                         y: centerY - height / 2,
                                          width: width,
                                          height: height),
                     Confidence = confidence,
