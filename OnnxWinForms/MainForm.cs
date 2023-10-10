@@ -1,5 +1,6 @@
 ﻿using Common.Helper;
 using OnnxDemo;
+using OnnxDemo.Classification;
 using OnnxDemo.Detection;
 using OnnxDemo.Extensions;
 using OnnxDemo.Utils;
@@ -34,14 +35,20 @@ namespace OnnxWinForms
             ChangeModel();
         }
 
-        private void ButtonInferClick(object sender, EventArgs e)
+        private void Predict()
         {
             if (bitmap != null)
             {
-                pictureBoxImage.Image = model.Predict<Bitmap>((Bitmap)bitmap.Clone());
+                if (model is YoloOnnxModel yolo)
+                {
+                    pictureBoxImage.Image = yolo.Predict<Bitmap>((Bitmap)bitmap.Clone());
+                }
+                else if (model is ClasOnnxModel clas)
+                {
+                    textBoxOutput.Text = clas.Predict<string>((Bitmap)bitmap.Clone());
+                }
             }
         }
-
 
         private void TextBoxDirectoryClick(object sender, EventArgs e)
         {
@@ -72,7 +79,6 @@ namespace OnnxWinForms
             ShowImage();
         }
 
-
         private void ShowImage()
         {
             string path = textBoxDirectory.Text + "\\" + listBoxDirectory.SelectedItem.ToString();
@@ -82,6 +88,7 @@ namespace OnnxWinForms
                 bitmap = (Bitmap)Image.FromFile(path);
                 bitmap = bitmap.Resize(640, 640);
                 pictureBoxImage.Image = bitmap;
+                Predict();
             }
         }
         private void ComboBoxModelItemChange(object sender, EventArgs e)
@@ -95,12 +102,20 @@ namespace OnnxWinForms
             DefaultFileLogHelper.Info(modelName);
 
             YamlConfig CurrentConfig = configs[modelName];
-            model = new YoloOnnxModel(onnxPath: CurrentConfig.OnnxPath,
-                                  labels: CurrentConfig.Labels)
+            if (modelName.Contains("yolo"))
             {
-                IOUThreshold = CurrentConfig.IOUThreshold,
-                ConfThreshold = CurrentConfig.ConfThreshold,
-            };
+                model = new YoloOnnxModel(onnxPath: CurrentConfig.OnnxPath,
+                                      labels: CurrentConfig.Labels)
+                {
+                    IOUThreshold = CurrentConfig.IOUThreshold,
+                    ConfThreshold = CurrentConfig.ConfThreshold,
+                };
+            }
+            else if (modelName.Contains("clas"))
+            {
+                model = new ClasOnnxModel(onnxPath: CurrentConfig.OnnxPath,
+                                      labels: CurrentConfig.Labels);
+            }
         }
 
         private void ListBoxDirectoryKeyDown(object sender, KeyEventArgs e)

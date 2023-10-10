@@ -31,18 +31,16 @@
             pictureBoxImage = new PictureBox();
             comboBoxModel = new ComboBox();
             label1 = new Label();
-            buttonInfer = new Button();
             textBoxDirectory = new TextBox();
-            panel1 = new Panel();
+            textBoxOutput = new TextBox();
             listBoxDirectory = new ListBox();
             label2 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).BeginInit();
-            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // pictureBoxImage
             // 
-            pictureBoxImage.Location = new Point(1, 0);
+            pictureBoxImage.Location = new Point(426, 2);
             pictureBoxImage.Name = "pictureBoxImage";
             pictureBoxImage.Size = new Size(640, 640);
             pictureBoxImage.TabIndex = 0;
@@ -53,7 +51,7 @@
             comboBoxModel.FormattingEnabled = true;
             comboBoxModel.Location = new Point(60, 13);
             comboBoxModel.Name = "comboBoxModel";
-            comboBoxModel.Size = new Size(215, 28);
+            comboBoxModel.Size = new Size(352, 28);
             comboBoxModel.TabIndex = 3;
             comboBoxModel.SelectionChangeCommitted += ComboBoxModelItemChange;
             // 
@@ -66,16 +64,6 @@
             label1.TabIndex = 4;
             label1.Text = "模型：";
             // 
-            // buttonInfer
-            // 
-            buttonInfer.Location = new Point(293, 12);
-            buttonInfer.Name = "buttonInfer";
-            buttonInfer.Size = new Size(119, 28);
-            buttonInfer.TabIndex = 5;
-            buttonInfer.Text = "检测(Enter)";
-            buttonInfer.UseVisualStyleBackColor = true;
-            buttonInfer.Click += ButtonInferClick;
-            // 
             // textBoxDirectory
             // 
             textBoxDirectory.Location = new Point(60, 47);
@@ -84,14 +72,13 @@
             textBoxDirectory.TabIndex = 7;
             textBoxDirectory.Click += TextBoxDirectoryClick;
             // 
-            // panel1
+            // textBoxOutput
             // 
-            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            panel1.Controls.Add(pictureBoxImage);
-            panel1.Location = new Point(433, 2);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(642, 642);
-            panel1.TabIndex = 8;
+            textBoxOutput.Location = new Point(1079, 2);
+            textBoxOutput.Multiline = true;
+            textBoxOutput.Name = "textBoxOutput";
+            textBoxOutput.Size = new Size(200, 640);
+            textBoxOutput.TabIndex = 8;
             // 
             // listBoxDirectory
             // 
@@ -115,21 +102,19 @@
             // 
             // MainForm
             // 
-            AcceptButton = buttonInfer;
             AutoScaleDimensions = new SizeF(9F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1076, 645);
+            ClientSize = new Size(1282, 645);
             Controls.Add(label2);
             Controls.Add(listBoxDirectory);
-            Controls.Add(panel1);
+            Controls.Add(pictureBoxImage);
+            Controls.Add(textBoxOutput);
             Controls.Add(textBoxDirectory);
-            Controls.Add(buttonInfer);
             Controls.Add(label1);
             Controls.Add(comboBoxModel);
             Name = "MainForm";
             Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)pictureBoxImage).EndInit();
-            panel1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -139,10 +124,9 @@
         private PictureBox pictureBoxImage;
         private ComboBox comboBoxModel;
         private Label label1;
-        private Button buttonInfer;
         private TextBox textBoxDirectory;
-        private Panel panel1;
         private ListBox listBoxDirectory;
         private Label label2;
+        private TextBox textBoxOutput;
     }
 }
