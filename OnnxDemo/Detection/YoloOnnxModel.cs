@@ -55,8 +55,8 @@ namespace OnnxDemo.Detection
 
                 bboxes.Add(new Rectangle(x: centerX - width / 2 + maxwh * maxClassScoreIdx,
                                          y: centerY - height / 2 + maxwh * maxClassScoreIdx,
-                                         width: width + maxwh * maxClassScoreIdx,
-                                         height: height + maxwh * maxClassScoreIdx));
+                                         width: width,
+                                         height: height));
                 scores.Add(confidence * maxClassScore);
                 detections.Add(new PredictionBox()
                 {

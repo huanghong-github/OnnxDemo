@@ -219,7 +219,7 @@ namespace OnnxDemo.Extensions
                 g.DrawRectangle(pen: new Pen(draw.BoxColor, 3),
                                 rect: new Rectangle(left, top, right - left, bottom - top));
 
-                g.DrawString(s: $"{p.LabelName}, {p.Confidence:0.00}",
+                g.DrawString(s: $"{p.LabelName}, {p.Score:0.00}",
                              font: new Font("Arial", draw.FontSize, FontStyle.Regular),
                              brush: draw.LabelColor,
                              point: new PointF(left, top));
