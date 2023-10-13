@@ -70,7 +70,7 @@
             textBoxDirectory.Name = "textBoxDirectory";
             textBoxDirectory.Size = new Size(352, 27);
             textBoxDirectory.TabIndex = 7;
-            textBoxDirectory.Click += TextBoxDirectoryClick;
+            textBoxDirectory.MouseClick += TextBoxDirectoryClick;
             // 
             // textBoxOutput
             // 
@@ -88,8 +88,8 @@
             listBoxDirectory.Name = "listBoxDirectory";
             listBoxDirectory.Size = new Size(392, 544);
             listBoxDirectory.TabIndex = 9;
-            listBoxDirectory.Click += ListBoxDirectoryClick;
-            listBoxDirectory.KeyDown += ListBoxDirectoryKeyDown;
+            listBoxDirectory.MouseClick += ListBoxDirectoryClick;
+            listBoxDirectory.SelectedIndexChanged += ListBoxDirectoryChange;
             // 
             // label2
             // 

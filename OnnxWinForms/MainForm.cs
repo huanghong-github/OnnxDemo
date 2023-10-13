@@ -50,7 +50,7 @@ namespace OnnxWinForms
             }
         }
 
-        private void TextBoxDirectoryClick(object sender, EventArgs e)
+        private void TextBoxDirectoryClick(object sender, MouseEventArgs e)
         {
             FolderBrowserDialog folderBrowserDialog = new()
             {
@@ -74,7 +74,7 @@ namespace OnnxWinForms
             listBoxDirectory.Update();
         }
 
-        private void ListBoxDirectoryClick(object sender, EventArgs e)
+        private void ListBoxDirectoryClick(object sender, MouseEventArgs e)
         {
             ShowImage();
         }
@@ -118,7 +118,7 @@ namespace OnnxWinForms
             }
         }
 
-        private void ListBoxDirectoryKeyDown(object sender, KeyEventArgs e)
+        private void ListBoxDirectoryChange(object sender, EventArgs e)
         {
             ShowImage();
         }
