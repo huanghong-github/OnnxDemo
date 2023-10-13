@@ -1,7 +1,9 @@
 ﻿using Emgu.CV.Dnn;
 using Emgu.CV.Util;
+using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using OnnxDemo.Extensions;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace OnnxDemo.Detection
@@ -10,6 +12,8 @@ namespace OnnxDemo.Detection
     {
         public YoloOnnxModel(string onnxPath, string[] labels) : base(onnxPath, labels)
         {
+            KeyValuePair<string, NodeMetadata> outputMetadata = session.OutputMetadata.First();
+            Debug.Assert(outputMetadata.Value.Dimensions[2] - 5 == labels.Length);
         }
 
         public new T Predict<T>(Bitmap bitmap) where T : class
